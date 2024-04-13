@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  spring-boot-flight-booking-app:
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      - SPRING_APPLICATION_NAME=FlightBooking
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  nginx:
+    ports:
+      - "80:80"
+    build:
+      context: docker/nginx/.
+    depends_on:
+      - spring-boot-flight-booking-app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
